@@ -1,17 +1,18 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import UserModel from "./models/user-model.js";
+import * as fs from "fs";
 
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", (req, res) => {
   const { email, password } = req.body;
-  const existingUser = await UserModel.findOne({ email });
+  const users = JSON.parse(fs.readFileSync("./user.json", "utf-8"));
+  const existingUser = users.find((user) => user.email === email);
   if (existingUser) return res.status(400).send({ message: "Email already registered!" });
 
-  bcrypt.hash(password, 10, async function (err, hash) {
+  bcrypt.hash(password, 10, function (err, hash) {
     const newUser = { email, password: hash };
-    await UserModel.create(newUser);
+    fs.writeFileSync("./user.json", JSON.stringify([...users, newUser]));
     return res.status(201).send(newUser);
   });
 });
