@@ -5,7 +5,23 @@ import UserModel from "./models/user-model.js";
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
-  const { email, password } = req.body;
+  const { credential, password, fullname, username } = req.body;
+  if (!credential || credential === "") {
+    return res.status(400).send({ message: "Email or Phone required!" });
+  }
+  if (!password || password === "") {
+    return res.status(400).send({ message: "Password required!" });
+  }
+  if (!fullname || fullname === "") {
+    return res.status(400).send({ message: "Fullname required!" });
+  }
+  if (!username || username === "") {
+    return res.status(400).send({ message: "Fullname required!" });
+  }
+
+  // BUH TALBAR UTGATAI BAIGAA
+  
+
   const existingUser = await UserModel.findOne({ email });
   if (existingUser) return res.status(400).send({ message: "Email already registered!" });
 
@@ -16,13 +32,9 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-router.post("/signin", (req, res) => {
-  console.log(req.body);
+router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-  console.log({ email, password });
-  const users = JSON.parse(fs.readFileSync("./user.json", "utf-8"));
-  const existingUser = users.find((user) => user.email === email);
-  console.log({ existingUser });
+  const existingUser = await UserModel.findOne({ email });
   if (!existingUser) return res.status(400).send({ message: "Email or password not correct!" });
   bcrypt.compare(password, existingUser.password, function (err, result) {
     if (!result) {
