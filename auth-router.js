@@ -4,6 +4,23 @@ import UserModel from "./models/user-model.js";
 
 const router = express.Router();
 
+const checkIsPhoneNumber = (credential) => {
+  console.log("1");
+  if (credential.length !== 8) return false;
+  console.log("2");
+  if (isNaN(Number(credential))) return false;
+  console.log("3");
+  const firstCharacter = credential[0];
+  if (!["9", "8", "7", "6"].includes(firstCharacter)) return false;
+  console.log("4");
+  return true;
+};
+
+const checkIsEmail = (credential) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(credential);
+};
+
 router.post("/signup", async (req, res) => {
   const { credential, password, fullname, username } = req.body;
   if (!credential || credential === "") {
@@ -18,9 +35,10 @@ router.post("/signup", async (req, res) => {
   if (!username || username === "") {
     return res.status(400).send({ message: "Fullname required!" });
   }
-
   // BUH TALBAR UTGATAI BAIGAA
-  
+
+  const isPhoneNumber = checkIsPhoneNumber(credential);
+  const isEmail = checkIsEmail(credential);
 
   const existingUser = await UserModel.findOne({ email });
   if (existingUser) return res.status(400).send({ message: "Email already registered!" });
