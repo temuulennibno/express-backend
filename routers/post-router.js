@@ -9,9 +9,8 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { description } = req.body;
-  const newPost = await PostModel.create({ description });
-  console.log(newPost);
+  const { description, mediaUrl } = req.body;
+  const newPost = await PostModel.create({ description, mediaUrl });
   return res.send(newPost);
 });
 

@@ -30,11 +30,17 @@ const upload = multer({ storage });
 router.use(upload.single("file"));
 
 router.post("/", async (req, res) => {
-  const response = await cloudinary.uploader.upload(req.file.path);
-  return res.send({
-    message: "Uploaded!",
-    fileUrl: response.secure_url,
-  });
+  try {
+    const response = await cloudinary.uploader.upload(req.file.path);
+    return res.send({
+      message: "Uploaded!",
+      fileUrl: response.secure_url,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      message: "Failed to upload!",
+    });
+  }
 });
 
 export default router;
