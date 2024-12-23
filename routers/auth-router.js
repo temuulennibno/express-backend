@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import UserModel from "../models/user-model.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { authMiddleware } from "../middlewares/auth-middleware.js";
 
 dotenv.config();
 
@@ -112,6 +113,10 @@ router.post("/signin", async (req, res) => {
       return res.status(200).send({ message: "Welcome", accessToken });
     }
   });
+});
+
+router.get("/me", authMiddleware, (req, res) => {
+  return res.send(req.user);
 });
 
 export default router;
