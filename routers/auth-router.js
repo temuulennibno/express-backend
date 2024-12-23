@@ -1,6 +1,10 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import UserModel from "../models/user-model.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -96,7 +100,16 @@ router.post("/signin", async (req, res) => {
     if (!result) {
       return res.status(400).send({ message: "Email or password not correct!" });
     } else {
-      return res.status(200).send({ message: "Welcome" });
+      const accessToken = jwt.sign(
+        {
+          user: existingUser,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "10m",
+        }
+      );
+      return res.status(200).send({ message: "Welcome", accessToken });
     }
   });
 });
