@@ -107,7 +107,7 @@ router.post("/signin", async (req, res) => {
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "10m",
+          expiresIn: "10h",
         }
       );
       return res.status(200).send({ message: "Welcome", accessToken });
@@ -118,5 +118,7 @@ router.post("/signin", async (req, res) => {
 router.get("/me", authMiddleware, (req, res) => {
   return res.send(req.user);
 });
+
+router.post("/me", authMiddleware, (req, res) => {});
 
 export default router;
