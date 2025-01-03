@@ -16,4 +16,10 @@ router.post("/", authMiddleware, async (req, res) => {
   return res.send(newPost);
 });
 
+router.get("/user/:_id", async (req, res) => {
+  const { _id } = req.params;
+  const posts = await PostModel.find({ user: _id });
+  return res.send(posts);
+});
+
 export default router;
