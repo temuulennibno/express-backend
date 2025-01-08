@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema(
   {
@@ -8,8 +8,14 @@ const postSchema = new mongoose.Schema(
     commentCount: { type: Number, default: 0 },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
   },
-  { timestamps: true }
+  { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
 );
+
+postSchema.virtual("comments", {
+  ref: "comments",
+  localField: "_id",
+  foreignField: "post",
+});
 
 const PostModel = mongoose.model("posts", postSchema);
 
