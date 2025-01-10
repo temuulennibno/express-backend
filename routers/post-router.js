@@ -1,8 +1,8 @@
 import express from "express";
 import PostModel from "../models/post-model.js";
 import CommentModel from "../models/comment-model.js";
+import LikeModel from "../models/like-model.js";
 import { authMiddleware } from "../middlewares/auth-middleware.js";
-import { populate } from "dotenv";
 
 const router = express.Router();
 
@@ -12,6 +12,13 @@ router.get("/", async (req, res) => {
       .populate("user", "profileUrl username")
       .populate({
         path: "comments",
+        populate: {
+          path: "user",
+          select: "profileUrl username",
+        },
+      })
+      .populate({
+        path: "likes",
         populate: {
           path: "user",
           select: "profileUrl username",
@@ -59,6 +66,36 @@ router.post("/:postId/comments", authMiddleware, async (req, res) => {
       user: user._id,
     });
     return res.send(newComment);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server can't handle that request" });
+  }
+});
+
+router.post("/:postId/likes", authMiddleware, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const user = req.user;
+    const newLike = await LikeModel.create({
+      post: postId,
+      user: user._id,
+    });
+    return res.send(newLike);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server can't handle that request" });
+  }
+});
+
+router.delete("/:postId/likes", authMiddleware, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const user = req.user;
+    const deletedLike = await LikeModel.findOneAndDelete({
+      post: postId,
+      user: user._id,
+    });
+    return res.send(deletedLike);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server can't handle that request" });
