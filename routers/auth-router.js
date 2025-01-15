@@ -119,6 +119,4 @@ router.get("/me", authMiddleware, (req, res) => {
   return res.send(req.user);
 });
 
-router.post("/me", authMiddleware, (req, res) => {});
-
 export default router;
